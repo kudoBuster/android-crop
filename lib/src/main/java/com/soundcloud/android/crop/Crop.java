@@ -18,6 +18,7 @@ public class Crop {
 
     public static final int REQUEST_CROP = 6709;
     public static final int REQUEST_PICK = 9162;
+    public static final int REQUEST_CAMERA = 3425;
     public static final int RESULT_ERROR = 404;
 
     interface Extra {
@@ -260,7 +261,88 @@ public class Crop {
     }
 
     private static void showImagePickerError(Context context) {
-        Toast.makeText(context.getApplicationContext(), R.string.crop__pick_error, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, R.string.crop__pick_error, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Call camera from an Activity
+     * @param activity Activity to receive result
+     * @param imageUri imageUri for saving the image
+     */
+    public static void camera (Activity activity, Uri imageUri) {
+        camera(activity, imageUri, REQUEST_CAMERA);
+    }
+
+    /**
+     * Call camera from a fragment
+     * @param context Context
+     * @param fragment Fragment to receive result
+     * @param imageUri imageUri for saving the image
+     */
+    public static void camera (Context context, Fragment fragment, Uri imageUri) {
+        camera(context, fragment, imageUri, REQUEST_CAMERA);
+    }
+
+    /**
+     * Call camera form a support library fragment
+     * @param context Context
+     * @param fragment Fragment to receive result
+     * @param imageUri imageUri for saving the image
+     */
+    public static void camera (Context context, android.support.v4.app.Fragment fragment, Uri imageUri) {
+        camera(context, fragment, imageUri, REQUEST_CAMERA);
+    }
+
+    /**
+     * Call camera from an Activity with a custom request code
+     * @param activity Activity
+     * @param imageUri imageUri for saving the image
+     * @param requestCode requestCode for resut
+     */
+    public static void camera (Activity activity, Uri imageUri, int requestCode) {
+        try{
+            activity.startActivityForResult(getCamera(imageUri), requestCode);
+        } catch (ActivityNotFoundException e) {
+            showCameraError(activity);
+        }
+    }
+
+    /**
+     * Call camera from a Fragment with a custom request code
+     * @param context Context
+     * @param fragment Fragment to receive result
+     * @param imageUri imageUri for saving the image
+     * @param requestCode requestCode for result
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static void camera (Context context, Fragment fragment, Uri imageUri, int requestCode) {
+        try{
+            fragment.startActivityForResult(getCamera(imageUri), requestCode);
+        } catch (ActivityNotFoundException e) {
+            showCameraError(context);
+        }
+    }
+
+    /**
+     * Call camera from a support library Fragment with a custom request code
+     * @param context Context
+     * @param fragment Fragment to receive result
+     * @param imageUri imageUri for saving the image
+     * @param requestCode requestCode for result
+     */
+    public static void camera (Context context, android.support.v4.app.Fragment fragment, Uri imageUri, int requestCode) {
+        try{
+            fragment.startActivityForResult(getCamera(imageUri), requestCode);
+        } catch (ActivityNotFoundException e) {
+            showCameraError(context);
+        }
+    }
+
+    private static Intent getCamera (Uri imageUri) {
+        return new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+    }
+
+    private static void showCameraError (Context context) {
+        Toast.makeText(context, R.string.crop__pick_error, Toast.LENGTH_SHORT).show();
+    }
 }
